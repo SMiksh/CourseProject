@@ -1,10 +1,9 @@
 #pragma once
-
-struct Button {
-    float x, y, w, h;
-
+class Button {
+public:
     bool contains(float mx, float my) const {
         return mx >= x && mx <= x + w &&
             my >= y && my <= y + h;
     }
+    float x, y, w, h;
 };

@@ -1,7 +1,11 @@
-﻿  Card.cpp
-  Course Final.cpp
+﻿  Course Final.cpp
+F:\девежопер\Course Final\Course Final\Course Final.cpp(95,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+F:\девежопер\Course Final\Course Final\Course Final.cpp(96,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+F:\девежопер\Course Final\Course Final\Course Final.cpp(113,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+F:\девежопер\Course Final\Course Final\Course Final.cpp(114,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+F:\девежопер\Course Final\Course Final\Course Final.cpp(115,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+F:\девежопер\Course Final\Course Final\Course Final.cpp(116,45): warning C4244: =: преобразование "int" в "float", возможна потеря данных
   Game.cpp
-  Renderer.cpp
   Создание кода...
   Course Final.vcxproj -> F:\девежопер\Course Final\x64\Debug\Course Final.exe
   "pwsh.exe" не является внутренней или внешней

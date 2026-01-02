@@ -1,18 +1,18 @@
 #include "Game.h"
 #include "Renderer.h"
 #include <algorithm>
-#include <cstdlib>
-#include <ctime>
 #include <random>
+#include <ctime>
 
-Game::Game(int screenW, int screenH) {
+Game::Game(int screenW_, int screenH_)
+    : screenW(screenW_), screenH(screenH_) {
+
     std::srand((unsigned)time(nullptr));
-    // параметры сетки
+
     const int cols = 4;
     const int rows = 2;
 
-    // вычисляем размер карточки и отступы так, чтобы сетка была по центру
-    float totalGapFactor = 0.2f; // доля размера карточки как gap
+    float totalGapFactor = 0.2f;
     float maxCardW = screenW / (cols + (cols + 1) * totalGapFactor);
     float maxCardH = screenH / (rows + (rows + 1) * totalGapFactor);
     float cardSize = std::min(maxCardW, maxCardH);
@@ -24,15 +24,13 @@ Game::Game(int screenW, int screenH) {
     float startX = (screenW - gridWidth) * 0.5f;
     float startY = (screenH - gridHeight) * 0.5f;
 
-    // карточки: пары id
     std::vector<int> ids;
     for (int i = 0; i < (cols * rows) / 2; ++i) {
         ids.push_back(i);
         ids.push_back(i);
     }
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(ids.begin(), ids.end(), g);
+
+    std::shuffle(ids.begin(), ids.end(), std::mt19937{ std::random_device{}() });
 
     int idx = 0;
     for (int r = 0; r < rows; ++r) {
@@ -45,7 +43,9 @@ Game::Game(int screenW, int screenH) {
 }
 
 void Game::click(float x, float y) {
-    if (second) return; // ждём окончания проверки
+    if (win) return;
+    if (second) return;
+
     for (auto& c : cards) {
         if (!c.isOpen() && !c.isMatched() && c.contains(x, y)) {
             c.open();
@@ -57,10 +57,13 @@ void Game::click(float x, float y) {
 }
 
 void Game::update(float dt) {
+    if (win) return;
+
     if (first && second) {
         timer += dt;
         if (timer > 0.6f) {
             moves++;
+
             if (first->getId() == second->getId()) {
                 first->setMatched();
                 second->setMatched();
@@ -69,19 +72,63 @@ void Game::update(float dt) {
                 first->close();
                 second->close();
             }
-            first = second = nullptr;
+
+            first = nullptr;
+            second = nullptr;
             timer = 0.0f;
+
+            if (checkWin()) {
+                win = true;
+            }
         }
     }
 }
 
+bool Game::checkWin() const {
+    for (const auto& c : cards) {
+        if (!c.isMatched())
+            return false;
+    }
+    return true;
+}
+
 int Game::getMoves() const {
     return moves;
+}
+bool Game::isWin() const {
+    return win;
 }
 
 
 void Game::render() {
     for (auto& c : cards) {
         Renderer::drawRect(c.x, c.y, c.size, c.isOpen(), c.isMatched());
+        if (c.isOpen()) {
+            Renderer::drawSymbol(c.getId(), c.x, c.y, c.size);
+        }
     }
+
+ 
+    if (!win) {
+        Renderer::drawNumber(moves, 20.0f, screenH - 60.0f, 30.0f);
+    }
+
+    if (win) {
+        renderWinScreen();
+    }
+}
+
+void Game::renderWinScreen() {
+
+    Renderer::drawPanel(0, 0, (float)screenW, (float)screenH);
+
+
+    float panelW = screenW * 0.5f;
+    float panelH = screenH * 0.3f;
+    float px = (screenW - panelW) * 0.5f;
+    float py = (screenH - panelH) * 0.5f;
+
+    Renderer::drawPanel(px, py, panelW, panelH);
+
+   
 }
